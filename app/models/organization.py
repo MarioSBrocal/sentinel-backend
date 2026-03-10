@@ -5,6 +5,8 @@ from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.models.alert_channel import AlertChannel
+from app.models.monitor import Monitor
 from app.models.organization_user import OrganizationUser
 
 
@@ -21,5 +23,11 @@ class Organization(Base):
     )
 
     members: Mapped[list[OrganizationUser]] = relationship(
+        back_populates="organization", cascade="all, delete-orphan"
+    )
+    monitors: Mapped[list[Monitor]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+    alert_channels: Mapped[list[AlertChannel]] = relationship(
         back_populates="organization", cascade="all, delete-orphan"
     )
