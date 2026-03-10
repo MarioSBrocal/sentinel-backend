@@ -1,7 +1,7 @@
 import enum
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import (
     Boolean,
@@ -19,9 +19,11 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.alert_channel import AlertChannel
-from app.models.organization import Organization
-from app.models.user import User
+
+if TYPE_CHECKING:
+    from app.models.alert_channel import AlertChannel
+    from app.models.organization import Organization
+    from app.models.user import User
 
 
 class HTTPMethod(enum.StrEnum):

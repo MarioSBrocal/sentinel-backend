@@ -1,13 +1,16 @@
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.alert_channel import AlertChannel
-from app.models.monitor import Monitor
-from app.models.organization_user import OrganizationUser
+
+if TYPE_CHECKING:
+    from app.models.alert_channel import AlertChannel
+    from app.models.monitor import Monitor
+    from app.models.organization_user import OrganizationUser
 
 
 class Organization(Base):
