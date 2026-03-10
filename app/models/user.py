@@ -1,13 +1,16 @@
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, Index, String, func, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.alert_channel import AlertChannel
-from app.models.monitor import Monitor
-from app.models.organization_user import OrganizationUser
+
+if TYPE_CHECKING:
+    from app.models.alert_channel import AlertChannel
+    from app.models.monitor import Monitor
+    from app.models.organization_user import OrganizationUser
 
 
 class User(Base):
@@ -34,9 +37,11 @@ class User(Base):
         back_populates="user", cascade="all, delete-orphan"
     )
 
-    __table_args__ = Index(
-        "ix_users_email_active",
-        "email",
-        unique=True,
-        postgresql_where=text("deleted_at IS NULL"),
+    __table_args__ = (
+        Index(
+            "ix_users_email_active",
+            "email",
+            unique=True,
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
     )

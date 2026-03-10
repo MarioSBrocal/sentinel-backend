@@ -1,14 +1,17 @@
 import enum
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.monitor import Monitor
-from app.models.organization import Organization
-from app.models.user import User
+
+if TYPE_CHECKING:
+    from app.models.monitor import Monitor
+    from app.models.organization import Organization
+    from app.models.user import User
 
 
 class AlertChannelType(enum.StrEnum):
