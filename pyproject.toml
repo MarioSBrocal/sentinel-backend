@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Asynchronous REST API for web service monitoring."
 authors = [{ name = "MarioSBrocal" }]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "alembic>=1.18.4",
     "asyncpg>=0.31.0",
@@ -31,7 +31,7 @@ dev = ["pytest>=9.0.2", "ruff>=0.15.5", "ty>=0.0.21"]
 [tool.ruff]
 line-length = 88
 indent-width = 4
-target-version = "py313"
+target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I", "UP", "B", "RUF"]
