@@ -1,5 +1,10 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypeVar
+
+from app.core.errors import AppError
+
+T = TypeVar("T", covariant=True)
+E = TypeVar("E", bound=AppError, covariant=True)
 
 
 @dataclass(frozen=True)
@@ -26,6 +31,10 @@ class Ok[T]:
         """Returns the contained value if the result is Ok, otherwise raises an exception."""
         return self.value
 
+    def unwrap_err(self) -> Any:
+        """Raises an exception with the contained error message if the result is Err, otherwise raises an exception."""
+        raise RuntimeError(f"Called unwrap_err on an Ok value: {self.value}")
+
 
 @dataclass(frozen=True)
 class Err[E]:
@@ -51,6 +60,10 @@ class Err[E]:
         """Raises an exception with the contained error message."""
         raise RuntimeError(f"Called unwrap on an Err value: {self.error}")
 
+    def unwrap_err(self) -> E:
+        """Returns the contained error if the result is Err, otherwise raises an exception."""
+        return self.error
+
 
 # A type alias for a result that can be either Ok or Err.
-type Result[T, E] = Ok[T] | Err[E]
+Result = Ok[T] | Err[E]

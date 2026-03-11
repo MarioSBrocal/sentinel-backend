@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base
+from app.models.base import Base
 
 if TYPE_CHECKING:
     from app.models.monitor import Monitor
@@ -45,8 +45,10 @@ class AlertChannel(Base):
         DateTime(timezone=True), nullable=True
     )
 
-    user: Mapped[User] = relationship(back_populates="alert_channels")
-    organization: Mapped[Organization] = relationship(back_populates="alert_channels")
+    user: Mapped[User | None] = relationship(back_populates="alert_channels")
+    organization: Mapped[Organization | None] = relationship(
+        back_populates="alert_channels"
+    )
 
     monitors: Mapped[list[Monitor]] = relationship(
         secondary="monitor_alerts", back_populates="alert_channels"
