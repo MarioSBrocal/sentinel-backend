@@ -6,6 +6,7 @@ class Settings(BaseSettings):
 
     project_name: str = "Sentinel API"
     environment: str = "development"
+    secret_key: str
     database_url: str
     redis_url: str
 
