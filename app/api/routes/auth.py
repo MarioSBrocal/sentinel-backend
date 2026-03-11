@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.dependencies import get_user_service
-from app.core import security
 from app.core.errors import InvalidCredentialsError, UserAlreadyExistsError
+from app.core.security import create_access_token
 from app.schemas.token import Token
 from app.schemas.user import UserCreate, UserResponse
 from app.services.user_service import UserService
@@ -59,5 +59,5 @@ async def login(
                 )
 
     user = result.unwrap()
-    access_token = security.create_access_token(data={"sub": user.email})
+    access_token = create_access_token(data={"sub": user.email})
     return Token(access_token=access_token, token_type="bearer")

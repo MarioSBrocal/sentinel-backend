@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth
+from app.api.routes import auth, users
 
 middleware = [
     Middleware(
@@ -24,6 +24,7 @@ app = FastAPI(
 
 # Include API routes
 app.include_router(auth.router, prefix="/api/v1/auth")
+app.include_router(users.router, prefix="/api/v1/users")
 
 
 # Health check endpoint

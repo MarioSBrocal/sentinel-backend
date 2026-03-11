@@ -46,3 +46,12 @@ class InvalidCredentialsError(AppError):
     @property
     def message(self) -> str:
         return "Invalid email or password."
+
+
+@dataclass
+class TokenError(AppError):
+    """Raised when there is an issue with JWT token validation."""
+
+    @property
+    def message(self) -> str:
+        return "Invalid or expired token."

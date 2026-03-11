@@ -3,6 +3,7 @@ from app.core.errors import (
     DatabaseError,
     InvalidCredentialsError,
     UserAlreadyExistsError,
+    UserNotFoundError,
 )
 from app.core.result import Err, Ok, Result
 from app.core.security import get_password_hash, verify_password
@@ -40,3 +41,12 @@ class UserService:
             return Err(InvalidCredentialsError())
 
         return Ok(user)
+
+    async def get_user_by_email(self, email: str) -> Result[User, AppError]:
+        """Retrieve a user by their email."""
+        user = await self.user_repo.get_by_email(email)
+
+        if user:
+            return Ok(user)
+        else:
+            return Err(UserNotFoundError(email=email))
