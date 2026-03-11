@@ -18,7 +18,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base
+from app.models.base import Base
 
 if TYPE_CHECKING:
     from app.models.alert_channel import AlertChannel
@@ -77,8 +77,8 @@ class Monitor(Base):
         DateTime(timezone=True), nullable=True
     )
 
-    user: Mapped[User] = relationship(back_populates="monitors")
-    organization: Mapped[Organization] = relationship(back_populates="monitors")
+    user: Mapped[User | None] = relationship(back_populates="monitors")
+    organization: Mapped[Organization | None] = relationship(back_populates="monitors")
     alert_channels: Mapped[list[AlertChannel]] = relationship(
         secondary="monitor_alerts", back_populates="monitors"
     )
