@@ -31,7 +31,7 @@ class MonitorService:
             url=url,
             method=method,
             interval_seconds=interval_seconds,
-            is_paused=True,
+            is_paused=False,
             headers=headers,
             assertions=[assertion.model_dump(mode="json") for assertion in assertions],
             body=body,
