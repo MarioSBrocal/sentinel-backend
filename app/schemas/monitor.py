@@ -18,7 +18,7 @@ class MonitorBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     url: HttpUrl
     method: HTTPMethod = HTTPMethod.GET
-    interval_seconds: int = Field(default=60, ge=15, multiple_of=5)
+    interval_seconds: int = Field(default=60, ge=15, multiple_of=15)
 
 
 class MonitorCreate(MonitorBase):
