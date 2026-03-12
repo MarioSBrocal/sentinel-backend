@@ -64,13 +64,13 @@ class MonitorBase(BaseModel):
 
 
 class MonitorCreate(MonitorBase):
-    """Datos necesarios para crear un monitor."""
+    """Schema for registering new monitors."""
 
     pass
 
 
 class MonitorResponse(MonitorBase):
-    """Datos que devolvemos al frontend."""
+    """Schema for returning monitor data to the frontend."""
 
     id: uuid.UUID
     user_id: uuid.UUID
