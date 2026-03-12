@@ -56,7 +56,7 @@ class Monitor(Base):
         default=HTTPMethod.GET,
     )
 
-    interval_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=5)
+    interval_seconds: Mapped[int] = mapped_column(Integer, nullable=False, default=60)
 
     headers: Mapped[dict[str, Any]] = mapped_column(
         JSONB, server_default=text("'{}'::jsonb"), nullable=False
