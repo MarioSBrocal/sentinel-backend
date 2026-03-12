@@ -1,4 +1,3 @@
-# app/services/monitor_service.py
 import uuid
 from typing import Any
 

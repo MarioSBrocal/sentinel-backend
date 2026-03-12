@@ -2,7 +2,16 @@ from fastapi import FastAPI
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import alert_channels, auth, monitors, users
+from app.api.routes import (
+    alert_channels,
+    auth,
+    daily_stats,
+    hourly_stats,
+    incidents,
+    monitors,
+    ping_logs,
+    users,
+)
 from app.core.config import settings
 
 middleware = [
@@ -26,7 +35,11 @@ app = FastAPI(
 # Include API routes
 app.include_router(alert_channels.router, prefix="/api/v1/alert-channels")
 app.include_router(auth.router, prefix="/api/v1/auth")
+app.include_router(daily_stats.router, prefix="/api/v1/daily-stats")
+app.include_router(hourly_stats.router, prefix="/api/v1/hourly-stats")
+app.include_router(incidents.router, prefix="/api/v1/incidents")
 app.include_router(monitors.router, prefix="/api/v1/monitors")
+app.include_router(ping_logs.router, prefix="/api/v1/ping-logs")
 app.include_router(users.router, prefix="/api/v1/users")
 
 
