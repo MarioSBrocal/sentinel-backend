@@ -4,8 +4,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Application settings, loaded from the .env file."""
 
-    project_name: str = "Sentinel API"
-    environment: str = "development"
+    project_name: str
+    version: str
+    description: str
+    environment: str
     secret_key: str
     database_url: str
     redis_url: str

@@ -3,6 +3,7 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import alert_channels, auth, monitors, users
+from app.core.config import settings
 
 middleware = [
     Middleware(
@@ -16,9 +17,9 @@ middleware = [
 
 # Init FastAPI app
 app = FastAPI(
-    title="Sentinel Monitoring API",
-    description="Backend engine for Sentinel SaaS",
-    version="0.1.0",
+    title=settings.project_name,
+    description=settings.description,
+    version=settings.version,
     middleware=middleware,
 )
 
@@ -32,4 +33,8 @@ app.include_router(users.router, prefix="/api/v1/users")
 # Health check endpoint
 @app.get("/health", tags=["system"])
 async def health_check():
-    return {"status": "online", "service": "sentinel-api", "version": "0.1.0"}
+    return {
+        "status": "online",
+        "service": settings.project_name,
+        "version": settings.version,
+    }
