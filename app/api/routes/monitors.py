@@ -26,6 +26,9 @@ async def create_monitor(
         url=str(monitor_in.url),
         method=monitor_in.method,
         interval_seconds=monitor_in.interval_seconds,
+        headers=monitor_in.headers,
+        assertions=monitor_in.assertions,
+        body=monitor_in.body,
     )
 
     if result.is_err():

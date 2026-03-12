@@ -1,10 +1,12 @@
 # app/services/monitor_service.py
 import uuid
+from typing import Any
 
 from app.core.errors import AppError, DatabaseError
 from app.core.result import Err, Ok, Result
 from app.domain.repositories import MonitorRepository
 from app.models.monitor import Monitor
+from app.schemas.monitor import Assertion
 
 
 class MonitorService:
@@ -18,6 +20,9 @@ class MonitorService:
         url: str,
         method: str,
         interval_seconds: int,
+        headers: dict[str, Any],
+        assertions: list[Assertion],
+        body: str | None = None,
     ) -> Result[Monitor, AppError]:
         """Create a new monitor for a user."""
         new_monitor = Monitor(
@@ -26,7 +31,10 @@ class MonitorService:
             url=url,
             method=method,
             interval_seconds=interval_seconds,
-            is_active=True,
+            is_paused=True,
+            headers=headers,
+            assertions=[assertion.model_dump(mode="json") for assertion in assertions],
+            body=body,
         )
 
         try:

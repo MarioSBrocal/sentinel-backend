@@ -61,8 +61,8 @@ class Monitor(Base):
     headers: Mapped[dict[str, Any]] = mapped_column(
         JSONB, server_default=text("'{}'::jsonb"), nullable=False
     )
-    assertions: Mapped[dict[str, Any]] = mapped_column(
-        JSONB, server_default=text("'{}'::jsonb"), nullable=False
+    assertions: Mapped[list[dict[str, Any]]] = mapped_column(
+        JSONB, server_default=text("'[]'::jsonb"), nullable=False
     )
     body: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
 
