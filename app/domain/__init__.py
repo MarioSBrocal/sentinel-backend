@@ -1,3 +1,7 @@
-from app.domain.repositories import MonitorRepository, UserRepository
+from app.domain.repositories import (
+    AlertChannelRepository,
+    MonitorRepository,
+    UserRepository,
+)
 
-__all__ = ["MonitorRepository", "UserRepository"]
+__all__ = ["AlertChannelRepository", "MonitorRepository", "UserRepository"]

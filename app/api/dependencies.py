@@ -8,10 +8,14 @@ from app.core.config import settings
 from app.core.errors import TokenError
 from app.core.security import ALGORITHM
 from app.infrastructure.db.session import get_db
+from app.infrastructure.repositories.alert_channel_repo import (
+    SQLAlchemyAlertChannelRepository,
+)
 from app.infrastructure.repositories.monitor_repo import SQLAlchemyMonitorRepository
 from app.infrastructure.repositories.user_repo import SQLAlchemyUserRepository
 from app.models.user import User
 from app.schemas.token import TokenData
+from app.services.alert_channel_service import AlertChannelService
 from app.services.monitor_service import MonitorService
 from app.services.user_service import UserService
 
@@ -74,3 +78,15 @@ def get_monitor_service(
 ) -> MonitorService:
     """Gets the monitor service instance."""
     return MonitorService(monitor_repo=repo)
+
+
+def get_alert_channel_repository(
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> SQLAlchemyAlertChannelRepository:
+    return SQLAlchemyAlertChannelRepository(db)
+
+
+def get_alert_channel_service(
+    repo: SQLAlchemyAlertChannelRepository = Depends(get_alert_channel_repository),  # noqa: B008
+) -> AlertChannelService:
+    return AlertChannelService(channel_repo=repo)

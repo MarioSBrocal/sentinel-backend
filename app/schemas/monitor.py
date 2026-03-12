@@ -5,14 +5,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
-
-class HTTPMethod(enum.StrEnum):
-    GET = "GET"
-    POST = "POST"
-    PUT = "PUT"
-    PATCH = "PATCH"
-    DELETE = "DELETE"
-    HEAD = "HEAD"
+from app.models.monitor import HTTPMethod
 
 
 class AssertionSource(enum.StrEnum):

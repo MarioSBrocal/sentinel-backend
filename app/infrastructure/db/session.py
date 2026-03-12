@@ -11,7 +11,7 @@ from app.core.config import settings
 # Create the asynchronous engine
 engine = create_async_engine(
     str(settings.database_url),
-    echo=settings.environment == "development",
+    echo=settings.environment == "dev",
     future=True,
     pool_pre_ping=True,
 )
