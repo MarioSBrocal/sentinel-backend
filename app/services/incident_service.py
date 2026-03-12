@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 
 from app.core.errors import AppError, DatabaseError, IncidentNotFoundError
 from app.core.result import Err, Ok, Result
@@ -14,7 +15,7 @@ class IncidentService:
         self,
         monitor_id: uuid.UUID,
         error_type: IncidentType,
-        error_details: str | None = None,
+        error_details: dict[str, Any] | None = None,
     ) -> Result[Incident, AppError]:
         """Create a new incident for a monitor."""
         new_incident = Incident(
