@@ -8,9 +8,11 @@ from app.core.config import settings
 from app.core.errors import TokenError
 from app.core.security import ALGORITHM
 from app.infrastructure.db.session import get_db
+from app.infrastructure.repositories.monitor_repo import SQLAlchemyMonitorRepository
 from app.infrastructure.repositories.user_repo import SQLAlchemyUserRepository
 from app.models.user import User
 from app.schemas.token import TokenData
+from app.services.monitor_service import MonitorService
 from app.services.user_service import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
@@ -58,3 +60,17 @@ async def get_current_user(
         raise credentials_exception
 
     return result.unwrap()
+
+
+def get_monitor_repository(
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> SQLAlchemyMonitorRepository:
+    """Gets the monitor repository instance."""
+    return SQLAlchemyMonitorRepository(db)
+
+
+def get_monitor_service(
+    repo: SQLAlchemyMonitorRepository = Depends(get_monitor_repository),  # noqa: B008
+) -> MonitorService:
+    """Gets the monitor service instance."""
+    return MonitorService(monitor_repo=repo)
