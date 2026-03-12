@@ -41,6 +41,17 @@ class Assertion(BaseModel):
     target: Any  # It can be int (200) or str ("OK") depending on the source
 
 
+def default_assertions() -> list[Assertion]:
+    """Default assertion to ensure the monitor is UP if the user doesn't provide any."""
+    return [
+        Assertion(
+            source=AssertionSource.STATUS_CODE,
+            operator=AssertionOperator.EQUALS,
+            target=200,
+        )
+    ]
+
+
 class MonitorBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     url: HttpUrl
@@ -51,7 +62,8 @@ class MonitorBase(BaseModel):
         description="Key-value pairs of HTTP headers to include in the request",
     )
     assertions: list[Assertion] = Field(
-        default_factory=list, description="Rules to validate the monitor is UP"
+        default_factory=default_assertions,
+        description="Rules to validate the monitor is UP",
     )
     body: str | None = Field(
         default=None, description="Body of the request (text or JSON string)"
