@@ -1,3 +1,3 @@
-from app.domain.repositories import UserRepository
+from app.domain.repositories import MonitorRepository, UserRepository
 
-__all__ = ["UserRepository"]
+__all__ = ["MonitorRepository", "UserRepository"]
