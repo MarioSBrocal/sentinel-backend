@@ -58,7 +58,7 @@ class MonitorBase(BaseModel):
         default_factory=default_assertions,
         description="Rules to validate the monitor is UP",
     )
-    body: str | None = Field(
+    body: dict[str, Any] | None = Field(
         default=None, description="Body of the request (text or JSON string)"
     )
 
