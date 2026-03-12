@@ -27,7 +27,7 @@ class SQLAlchemyIncidentRepository(IncidentRepository):
             raise
 
     @override
-    async def get_by_id(self, incident_id: uuid.UUID) -> Incident | None:
+    async def get_by_id(self, incident_id: int) -> Incident | None:
         result = await self.db.execute(
             select(Incident).where(Incident.id == incident_id)
         )

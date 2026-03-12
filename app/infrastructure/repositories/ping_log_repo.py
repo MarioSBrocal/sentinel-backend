@@ -27,7 +27,7 @@ class SQLAlchemyPingLogRepository(PingLogRepository):
             raise
 
     @override
-    async def get_by_id(self, log_id: uuid.UUID) -> PingLog | None:
+    async def get_by_id(self, log_id: int) -> PingLog | None:
         result = await self.db.execute(select(PingLog).where(PingLog.id == log_id))
         return result.scalars().first()
 

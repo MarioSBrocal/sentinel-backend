@@ -1,3 +1,5 @@
+import datetime
+import uuid
 from dataclasses import dataclass
 
 
@@ -55,3 +57,38 @@ class TokenError(AppError):
     @property
     def message(self) -> str:
         return "Invalid or expired token."
+
+
+@dataclass
+class IncidentNotFoundError(AppError):
+    """Raised when an incident with a given ID is not found."""
+
+    incident_id: int
+
+    @property
+    def message(self) -> str:
+        return f"Incident with ID {self.incident_id} not found."
+
+
+@dataclass
+class HourlyStatNotFound(AppError):
+    """Raised when an hourly stat with a given monitor ID and hour timestamp is not found."""
+
+    monitor_id: uuid.UUID
+    hour_timestamp: datetime.datetime
+
+    @property
+    def message(self) -> str:
+        return f"Hourly stat for monitor {self.monitor_id} at {self.hour_timestamp} not found."
+
+
+@dataclass
+class DailyStatNotFound(AppError):
+    """Raised when a daily stat with a given monitor ID and date is not found."""
+
+    monitor_id: uuid.UUID
+    date: datetime.date
+
+    @property
+    def message(self) -> str:
+        return f"Daily stat for monitor {self.monitor_id} on {self.date} not found."
