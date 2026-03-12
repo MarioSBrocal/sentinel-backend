@@ -1,4 +1,3 @@
-# app/infrastructure/repositories/monitor_sql.py
 import uuid
 from typing import override
 
