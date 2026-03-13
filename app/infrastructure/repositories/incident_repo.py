@@ -1,4 +1,5 @@
 import uuid
+from datetime import UTC, datetime
 from typing import override
 
 from sqlalchemy import select
@@ -39,3 +40,23 @@ class SQLAlchemyIncidentRepository(IncidentRepository):
             select(Incident).where(Incident.monitor_id == monitor_id)
         )
         return list(result.scalars().all())
+
+    @override
+    async def get_active_by_monitor(self, monitor_id: uuid.UUID) -> Incident | None:
+        result = await self.db.execute(
+            select(Incident).where(
+                Incident.monitor_id == monitor_id, Incident.resolved_at.is_(None)
+            )
+        )
+        return result.scalars().first()
+
+    @override
+    async def resolve(self, incident_id: int) -> None:
+        incident = await self.get_by_id(incident_id)
+        if incident and incident.resolved_at is None:
+            incident.resolved_at = datetime.now(UTC)
+            try:
+                await self.db.commit()
+            except IntegrityError:
+                await self.db.rollback()
+                raise

@@ -1,7 +1,10 @@
+from collections.abc import AsyncGenerator
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from jose.exceptions import JWTError
+from redis.asyncio import ConnectionPool, Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -32,6 +35,16 @@ from app.services.ping_log_service import PingLogService
 from app.services.user_service import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+redis_pool = ConnectionPool.from_url(settings.redis_url, decode_responses=True)
+
+
+async def get_redis() -> AsyncGenerator[Redis]:
+    """Creates and returns a Redis client instance."""
+    client = Redis(connection_pool=redis_pool)
+    try:
+        yield client
+    finally:
+        await client.close()
 
 
 def get_user_repository(db: AsyncSession = Depends(get_db)) -> SQLAlchemyUserRepository:  # noqa: B008

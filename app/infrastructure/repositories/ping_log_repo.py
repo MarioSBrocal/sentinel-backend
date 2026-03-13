@@ -1,7 +1,8 @@
 import uuid
+from datetime import UTC, datetime, timedelta
 from typing import override
 
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -61,3 +62,39 @@ class SQLAlchemyPingLogRepository(PingLogRepository):
             select(PingLog).where(PingLog.monitor_id == monitor_id)
         )
         return list(result.scalars().all())
+
+    @override
+    async def ensure_daily_partitions(self) -> None:
+        """
+        Ensures that daily partitions for the ping_logs table exist for today and tomorrow.
+        This method should be called at least once a day to maintain the partitioning strategy.
+        """
+
+        today = datetime.now(UTC).date()
+        tomorrow = today + timedelta(days=1)
+        day_after = today + timedelta(days=2)
+
+        today_table = f"ping_logs_{today.strftime('%Y_%m_%d')}"
+        tomorrow_table = f"ping_logs_{tomorrow.strftime('%Y_%m_%d')}"
+
+        sql_today = text(f"""
+            CREATE TABLE IF NOT EXISTS {today_table} 
+            PARTITION OF ping_logs 
+            FOR VALUES FROM ('{today.strftime("%Y-%m-%d")} 00:00:00') 
+            TO ('{tomorrow.strftime("%Y-%m-%d")} 00:00:00');
+        """)
+
+        sql_tomorrow = text(f"""
+            CREATE TABLE IF NOT EXISTS {tomorrow_table} 
+            PARTITION OF ping_logs 
+            FOR VALUES FROM ('{tomorrow.strftime("%Y-%m-%d")} 00:00:00') 
+            TO ('{day_after.strftime("%Y-%m-%d")} 00:00:00');
+        """)
+
+        try:
+            await self.db.execute(sql_today)
+            await self.db.execute(sql_tomorrow)
+            await self.db.commit()
+        except Exception:
+            await self.db.rollback()
+            raise

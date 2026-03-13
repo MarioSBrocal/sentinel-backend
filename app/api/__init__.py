@@ -6,6 +6,7 @@ from app.api.dependencies import (
     get_incident_service,
     get_monitor_service,
     get_ping_log_service,
+    get_redis,
     get_user_service,
 )
 
@@ -17,5 +18,6 @@ __all__ = [
     "get_incident_service",
     "get_monitor_service",
     "get_ping_log_service",
+    "get_redis",
     "get_user_service",
 ]

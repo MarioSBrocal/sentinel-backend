@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +15,24 @@ from app.api.routes import (
     users,
 )
 from app.core.config import settings
+from app.worker.broker import broker
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Starting Sentinel API...")
+
+    if not broker.is_worker_process:
+        await broker.startup()
+        print("Taskiq/Redis connection established successfully.")
+
+    yield
+
+    print("Shutting down Sentinel API...")
+    if not broker.is_worker_process:
+        await broker.shutdown()
+        print("Taskiq/Redis connection closed successfully.")
+
 
 middleware = [
     Middleware(

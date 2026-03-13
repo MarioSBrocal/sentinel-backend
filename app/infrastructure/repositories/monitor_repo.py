@@ -38,6 +38,24 @@ class SQLAlchemyMonitorRepository(MonitorRepository):
         return result.scalars().first()
 
     @override
+    async def get_by_id_with_channels(self, monitor_id: uuid.UUID) -> Monitor | None:
+        result = await self.db.execute(
+            select(Monitor)
+            .where(Monitor.id == monitor_id, Monitor.deleted_at.is_(None))
+            .options(selectinload(Monitor.alert_channels))
+        )
+        return result.scalars().first()
+
+    @override
+    async def get_all_active(self) -> list[Monitor]:
+        result = await self.db.execute(
+            select(Monitor).where(
+                Monitor.is_paused.is_(False), Monitor.deleted_at.is_(None)
+            )
+        )
+        return list(result.scalars().all())
+
+    @override
     async def get_all_by_user(self, user_id: uuid.UUID) -> list[Monitor]:
         result = await self.db.execute(
             select(Monitor).where(
