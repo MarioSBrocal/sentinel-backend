@@ -1,7 +1,7 @@
 import uuid
 from typing import override
 
-from sqlalchemy import select
+from sqlalchemy import insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,13 +15,37 @@ class SQLAlchemyPingLogRepository(PingLogRepository):
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    # @override
+    # async def create(self, log: PingLog) -> PingLog:
+    #     self.db.add(log)
+    #     try:
+    #         await self.db.commit()
+    #         await self.db.refresh(log)
+    #         return log
+    #     except IntegrityError:
+    #         await self.db.rollback()
+    #         raise
+
     @override
     async def create(self, log: PingLog) -> PingLog:
-        self.db.add(log)
+        stmt = (
+            insert(PingLog)
+            .values(
+                monitor_id=log.monitor_id,
+                timestamp=log.timestamp,
+                status_code=log.status_code,
+                response_time_ms=log.response_time_ms,
+                is_up=log.is_up,
+            )
+            .returning(PingLog)
+        )
         try:
+            result = await self.db.execute(stmt)
             await self.db.commit()
-            await self.db.refresh(log)
-            return log
+            ping_log = result.scalars().first()
+            if ping_log is None:
+                raise Exception("Failed to create PingLog")
+            return ping_log
         except IntegrityError:
             await self.db.rollback()
             raise

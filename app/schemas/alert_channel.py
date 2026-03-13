@@ -15,7 +15,6 @@ from app.models.alert_channel import AlertChannelType
 
 
 class AlertChannelBase(BaseModel):
-    name: str = Field(..., min_length=1, max_length=100)
     type: AlertChannelType = AlertChannelType.EMAIL
     destination: str = Field(
         ..., description="Email address or URL depending on the type"

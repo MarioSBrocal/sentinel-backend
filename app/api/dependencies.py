@@ -85,17 +85,20 @@ def get_monitor_repository(
     return SQLAlchemyMonitorRepository(db)
 
 
-def get_monitor_service(
-    repo: SQLAlchemyMonitorRepository = Depends(get_monitor_repository),  # noqa: B008
-) -> MonitorService:
-    """Gets the monitor service instance."""
-    return MonitorService(monitor_repo=repo)
-
-
 def get_alert_channel_repository(
     db: AsyncSession = Depends(get_db),  # noqa: B008
 ) -> SQLAlchemyAlertChannelRepository:
     return SQLAlchemyAlertChannelRepository(db)
+
+
+def get_monitor_service(
+    repo: SQLAlchemyMonitorRepository = Depends(get_monitor_repository),  # noqa: B008
+    alert_channel_repo: SQLAlchemyAlertChannelRepository = Depends(  # noqa: B008
+        get_alert_channel_repository
+    ),
+) -> MonitorService:
+    """Gets the monitor service instance."""
+    return MonitorService(monitor_repo=repo, channel_repo=alert_channel_repo)
 
 
 def get_alert_channel_service(
