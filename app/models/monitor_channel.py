@@ -6,8 +6,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base
 
 
-class MonitorAlert(Base):
-    __tablename__ = "monitor_alerts"
+class MonitorChannel(Base):
+    __tablename__ = "monitor_channels"
 
     monitor_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("monitors.id", ondelete="CASCADE"), primary_key=True
