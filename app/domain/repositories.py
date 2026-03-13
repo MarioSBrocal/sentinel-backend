@@ -28,6 +28,10 @@ class MonitorRepository(Protocol):
 
     async def get_all_by_user(self, user_id: uuid.UUID) -> list[Monitor]: ...
 
+    async def add_alert_channel(
+        self, monitor_id: uuid.UUID, channel: AlertChannel
+    ) -> None: ...
+
 
 class AlertChannelRepository(Protocol):
     """Alert Channel Repository Protocol defines the interface for alert channel data access."""

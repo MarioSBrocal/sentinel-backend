@@ -60,6 +60,28 @@ class TokenError(AppError):
 
 
 @dataclass
+class MonitorNotFoundError(AppError):
+    """Raised when a monitor with a given ID is not found."""
+
+    monitor_id: uuid.UUID
+
+    @property
+    def message(self) -> str:
+        return f"Monitor with ID {self.monitor_id} not found."
+
+
+@dataclass
+class AlertChannelNotFoundError(AppError):
+    """Raised when an alert channel with a given ID is not found."""
+
+    channel_id: uuid.UUID
+
+    @property
+    def message(self) -> str:
+        return f"Alert channel with ID {self.channel_id} not found."
+
+
+@dataclass
 class IncidentNotFoundError(AppError):
     """Raised when an incident with a given ID is not found."""
 

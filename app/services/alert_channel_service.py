@@ -11,13 +11,11 @@ class AlertChannelService:
         self.channel_repo = channel_repo
 
     async def create_channel(
-        self, user_id: uuid.UUID, name: str, type: AlertChannelType, destination: str
+        self, user_id: uuid.UUID, type: AlertChannelType, destination: str
     ) -> Result[AlertChannel, AppError]:
         """Create a new alert channel for a user."""
 
-        new_channel = AlertChannel(
-            user_id=user_id, name=name, type=type, destination=destination
-        )
+        new_channel = AlertChannel(user_id=user_id, type=type, destination=destination)
 
         try:
             saved_channel = await self.channel_repo.create(new_channel)

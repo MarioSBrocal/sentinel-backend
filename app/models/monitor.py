@@ -84,7 +84,7 @@ class Monitor(Base):
     user: Mapped[User | None] = relationship(back_populates="monitors")
     organization: Mapped[Organization | None] = relationship(back_populates="monitors")
     alert_channels: Mapped[list[AlertChannel]] = relationship(
-        secondary="monitor_alerts", back_populates="monitors"
+        secondary="monitor_channels", back_populates="monitors"
     )
 
     __table_args__ = (

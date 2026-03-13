@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.dependencies import get_current_user, get_monitor_service
@@ -56,3 +58,31 @@ async def get_monitors(
         )
 
     return result.unwrap()
+
+
+@router.put(
+    "/{monitor_id}/alert-channels/{channel_id}", status_code=status.HTTP_204_NO_CONTENT
+)
+async def add_alert_channel_to_monitor(
+    monitor_id: str,
+    channel_id: str,
+    current_user: User = Depends(get_current_user),  # noqa: B008
+    service: MonitorService = Depends(get_monitor_service),  # noqa: B008
+):
+    """Adds an alert channel to a monitor."""
+
+    monitor_id_uuid = uuid.UUID(monitor_id)
+    channel_id_uuid = uuid.UUID(channel_id)
+    result = await service.link_alert_channel(
+        user_id=current_user.id,
+        monitor_id=monitor_id_uuid,
+        channel_id=channel_id_uuid,
+    )
+
+    if result.is_err():
+        error = result.unwrap_err()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.message
+        )
+
+    return None

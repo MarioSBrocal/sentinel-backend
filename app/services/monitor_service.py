@@ -1,16 +1,24 @@
 import uuid
 from typing import Any
 
-from app.core.errors import AppError, DatabaseError
+from app.core.errors import (
+    AlertChannelNotFoundError,
+    AppError,
+    DatabaseError,
+    MonitorNotFoundError,
+)
 from app.core.result import Err, Ok, Result
-from app.domain.repositories import MonitorRepository
+from app.domain.repositories import AlertChannelRepository, MonitorRepository
 from app.models.monitor import Monitor
 from app.schemas.monitor import Assertion
 
 
 class MonitorService:
-    def __init__(self, monitor_repo: MonitorRepository):
+    def __init__(
+        self, monitor_repo: MonitorRepository, channel_repo: AlertChannelRepository
+    ):
         self.monitor_repo = monitor_repo
+        self.channel_repo = channel_repo
 
     async def create_monitor(
         self,
@@ -21,7 +29,7 @@ class MonitorService:
         interval_seconds: int,
         headers: dict[str, Any],
         assertions: list[Assertion],
-        body: str | None = None,
+        body: dict[str, Any] | None = None,
     ) -> Result[Monitor, AppError]:
         """Create a new monitor for a user."""
         new_monitor = Monitor(
@@ -49,5 +57,22 @@ class MonitorService:
         try:
             monitors = await self.monitor_repo.get_all_by_user(user_id)
             return Ok(monitors)
+        except Exception as e:
+            return Err(DatabaseError(detail=str(e)))
+
+    async def link_alert_channel(
+        self, monitor_id: uuid.UUID, channel_id: uuid.UUID, user_id: uuid.UUID
+    ) -> Result[None, AppError]:
+        monitor = await self.monitor_repo.get_by_id(monitor_id)
+        if not monitor or monitor.user_id != user_id:
+            return Err(MonitorNotFoundError(monitor_id=monitor_id))
+
+        channel = await self.channel_repo.get_by_id(channel_id)
+        if not channel or channel.user_id != user_id:
+            return Err(AlertChannelNotFoundError(channel_id=channel_id))
+
+        try:
+            await self.monitor_repo.add_alert_channel(monitor_id, channel)
+            return Ok(None)
         except Exception as e:
             return Err(DatabaseError(detail=str(e)))

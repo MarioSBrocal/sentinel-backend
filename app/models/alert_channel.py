@@ -51,7 +51,7 @@ class AlertChannel(Base):
     )
 
     monitors: Mapped[list[Monitor]] = relationship(
-        secondary="monitor_alerts", back_populates="alert_channels"
+        secondary="monitor_channels", back_populates="alert_channels"
     )
 
     __table_args__ = (

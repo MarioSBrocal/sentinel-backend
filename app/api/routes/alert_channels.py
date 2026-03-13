@@ -22,7 +22,6 @@ async def create_channel(
 ):
     result = await service.create_channel(
         user_id=current_user.id,
-        name=channel_in.name,
         type=channel_in.type,
         destination=channel_in.destination,
     )
