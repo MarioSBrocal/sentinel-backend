@@ -2,11 +2,12 @@ import taskiq_fastapi
 from taskiq import TaskiqEvents
 from taskiq_redis import ListQueueBroker
 
+from app.core.config import settings
 from app.infrastructure.db.session import AsyncSessionLocal
 from app.infrastructure.repositories.ping_log_repo import SQLAlchemyPingLogRepository
 
 broker = ListQueueBroker(
-    url="redis://localhost:6379/0",
+    url=settings.redis_url,
 )
 
 
