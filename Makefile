@@ -1,13 +1,10 @@
-.PHONY: api worker scheduler services
+.PHONY: dev build down
 
-services:
-	docker compose up -d
+dev:
+	docker compose up
 
-api:
-	uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+build:
+	docker compose up --build
 
-worker:
-	uv run taskiq worker app.worker.broker:broker app.worker.tasks
-
-scheduler:
-	uv run taskiq scheduler app.worker.scheduler:scheduler
+down:
+	docker compose down
