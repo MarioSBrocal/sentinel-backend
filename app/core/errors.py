@@ -114,3 +114,32 @@ class DailyStatNotFound(AppError):
     @property
     def message(self) -> str:
         return f"Daily stat for monitor {self.monitor_id} on {self.date} not found."
+
+
+@dataclass
+class UserAlreadyInOrganizationError(AppError):
+    """Raised when trying to add a user to an organization they are already a member of."""
+
+    @property
+    def message(self) -> str:
+        return "User is already a member of the organization."
+
+
+@dataclass
+class UserNotInOrganizationError(AppError):
+    """Raised when trying to perform an action on a user that is not a member of the organization."""
+
+    @property
+    def message(self) -> str:
+        return "User is not a member of the organization."
+
+
+@dataclass
+class OrganizationNotFoundError(AppError):
+    """Raised when an organization with a given ID is not found."""
+
+    organization_id: uuid.UUID
+
+    @property
+    def message(self) -> str:
+        return f"Organization with ID {self.organization_id} not found."
