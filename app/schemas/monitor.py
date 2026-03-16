@@ -66,14 +66,17 @@ class MonitorBase(BaseModel):
 class MonitorCreate(MonitorBase):
     """Schema for registering new monitors."""
 
-    pass
+    organization_id: uuid.UUID | None = Field(
+        default=None, description="ID of the organization to which the monitor belongs"
+    )
 
 
 class MonitorResponse(MonitorBase):
     """Schema for returning monitor data to the frontend."""
 
     id: uuid.UUID
-    user_id: uuid.UUID
+    user_id: uuid.UUID | None
+    organization_id: uuid.UUID | None
     is_paused: bool
     created_at: datetime
 
