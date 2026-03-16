@@ -5,6 +5,7 @@ from app.api.routes import (
     hourly_stats,
     incidents,
     monitors,
+    organizations,
     ping_logs,
     users,
 )
@@ -16,6 +17,7 @@ __all__ = [
     "hourly_stats",
     "incidents",
     "monitors",
+    "organizations",
     "ping_logs",
     "users",
 ]
