@@ -31,6 +31,7 @@ async def create_monitor(
         headers=monitor_in.headers,
         assertions=monitor_in.assertions,
         body=monitor_in.body,
+        organization_id=monitor_in.organization_id,
     )
 
     if result.is_err():
