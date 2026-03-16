@@ -11,6 +11,7 @@ from app.api.routes import (
     hourly_stats,
     incidents,
     monitors,
+    organizations,
     ping_logs,
     users,
 )
@@ -59,6 +60,7 @@ app.include_router(daily_stats.router, prefix="/api/v1/daily-stats")
 app.include_router(hourly_stats.router, prefix="/api/v1/hourly-stats")
 app.include_router(incidents.router, prefix="/api/v1/incidents")
 app.include_router(monitors.router, prefix="/api/v1/monitors")
+app.include_router(organizations.router, prefix="/api/v1/organizations")
 app.include_router(ping_logs.router, prefix="/api/v1/ping-logs")
 app.include_router(users.router, prefix="/api/v1/users")
 

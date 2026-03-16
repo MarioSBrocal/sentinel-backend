@@ -30,10 +30,13 @@ class MonitorService:
         headers: dict[str, Any],
         assertions: list[Assertion],
         body: dict[str, Any] | None = None,
+        *,
+        organization_id: uuid.UUID | None = None,
     ) -> Result[Monitor, AppError]:
         """Create a new monitor for a user."""
         new_monitor = Monitor(
-            user_id=user_id,
+            user_id=user_id if organization_id is None else None,
+            organization_id=organization_id,
             name=name,
             url=url,
             method=method,

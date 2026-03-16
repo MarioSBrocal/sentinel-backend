@@ -15,7 +15,6 @@ if TYPE_CHECKING:
 class OrganizationRole(enum.StrEnum):
     OWNER = "owner"
     ADMIN = "admin"
-    MEMBER = "member"
     VIEWER = "viewer"
 
 
@@ -31,7 +30,7 @@ class OrganizationUser(Base):
     role: Mapped[OrganizationRole] = mapped_column(
         Enum(OrganizationRole, native_enum=False, length=20),
         nullable=False,
-        default=OrganizationRole.MEMBER,
+        default=OrganizationRole.VIEWER,
     )
 
     organization: Mapped[Organization] = relationship(back_populates="members")

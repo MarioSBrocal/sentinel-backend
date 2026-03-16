@@ -22,6 +22,9 @@ from app.infrastructure.repositories.hourly_stat_repo import (
 )
 from app.infrastructure.repositories.incident_repo import SQLAlchemyIncidentRepository
 from app.infrastructure.repositories.monitor_repo import SQLAlchemyMonitorRepository
+from app.infrastructure.repositories.organization_repo import (
+    SQLAlchemyOrganizationRepository,
+)
 from app.infrastructure.repositories.ping_log_repo import SQLAlchemyPingLogRepository
 from app.infrastructure.repositories.user_repo import SQLAlchemyUserRepository
 from app.models.user import User
@@ -31,6 +34,7 @@ from app.services.daily_stat_service import DailyStatService
 from app.services.hourly_stat_service import HourlyStatService
 from app.services.incident_service import IncidentService
 from app.services.monitor_service import MonitorService
+from app.services.organization_service import OrganizationService
 from app.services.ping_log_service import PingLogService
 from app.services.user_service import UserService
 
@@ -57,6 +61,20 @@ def get_user_service(
 ) -> UserService:
     """Gets the user service instance."""
     return UserService(user_repo=repo)
+
+
+def get_organization_repository(
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> SQLAlchemyOrganizationRepository:
+    """Gets the organization repository instance."""
+    return SQLAlchemyOrganizationRepository(db)
+
+
+def get_organization_service(
+    repo: SQLAlchemyOrganizationRepository = Depends(get_organization_repository),  # noqa: B008
+) -> OrganizationService:
+    """Gets the organization service instance."""
+    return OrganizationService(organization_repo=repo)
 
 
 async def get_current_user(

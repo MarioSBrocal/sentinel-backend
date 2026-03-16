@@ -4,6 +4,7 @@ from app.domain.repositories import (
     HourlyStatRepository,
     IncidentRepository,
     MonitorRepository,
+    OrganizationRepository,
     PingLogRepository,
     UserRepository,
 )
@@ -14,6 +15,7 @@ __all__ = [
     "HourlyStatRepository",
     "IncidentRepository",
     "MonitorRepository",
+    "OrganizationRepository",
     "PingLogRepository",
     "UserRepository",
 ]

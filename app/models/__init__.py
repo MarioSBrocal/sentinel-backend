@@ -6,7 +6,7 @@ from app.models.incident import Incident, IncidentType
 from app.models.monitor import HTTPMethod, Monitor
 from app.models.monitor_channel import MonitorChannel
 from app.models.organization import Organization
-from app.models.organization_user import OrganizationUser
+from app.models.organization_user import OrganizationRole, OrganizationUser
 from app.models.ping_log import PingLog
 from app.models.user import User
 
@@ -22,6 +22,7 @@ __all__ = [
     "Monitor",
     "MonitorChannel",
     "Organization",
+    "OrganizationRole",
     "OrganizationUser",
     "PingLog",
     "User",

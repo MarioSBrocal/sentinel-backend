@@ -9,6 +9,9 @@ from app.infrastructure.repositories.hourly_stat_repo import (
 )
 from app.infrastructure.repositories.incident_repo import SQLAlchemyIncidentRepository
 from app.infrastructure.repositories.monitor_repo import SQLAlchemyMonitorRepository
+from app.infrastructure.repositories.organization_repo import (
+    SQLAlchemyOrganizationRepository,
+)
 from app.infrastructure.repositories.ping_log_repo import SQLAlchemyPingLogRepository
 from app.infrastructure.repositories.user_repo import SQLAlchemyUserRepository
 
@@ -18,6 +21,7 @@ __all__ = [
     "SQLAlchemyHourlyStatRepository",
     "SQLAlchemyIncidentRepository",
     "SQLAlchemyMonitorRepository",
+    "SQLAlchemyOrganizationRepository",
     "SQLAlchemyPingLogRepository",
     "SQLAlchemyUserRepository",
 ]
