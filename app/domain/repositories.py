@@ -2,11 +2,15 @@ import uuid
 from datetime import date, datetime
 from typing import Protocol
 
+from app.core.errors import AppError
+from app.core.result import Result
 from app.models.alert_channel import AlertChannel
 from app.models.daily_stat import DailyStat
 from app.models.hourly_stat import HourlyStat
 from app.models.incident import Incident
 from app.models.monitor import Monitor
+from app.models.organization import Organization
+from app.models.organization_user import OrganizationRole
 from app.models.ping_log import PingLog
 from app.models.user import User
 
@@ -17,6 +21,39 @@ class UserRepository(Protocol):
     async def get_by_email(self, email: str) -> User | None: ...
 
     async def create(self, user: User) -> User: ...
+
+
+class OrganizationRepository(Protocol):
+    """Organization Repository Protocol defines the interface for organization data access."""
+
+    async def create(
+        self, organization: Organization
+    ) -> Result[Organization, AppError]: ...
+
+    async def get_by_id(
+        self, organization_id: uuid.UUID
+    ) -> Result[Organization, AppError]: ...
+
+    async def update(
+        self,
+        organization_id: uuid.UUID,
+        *,
+        name: str | None = None,
+    ) -> Result[None, AppError]: ...
+
+    async def delete(self, organization_id: uuid.UUID) -> Result[None, AppError]: ...
+
+    async def has_user(
+        self, organization_id: uuid.UUID, user_id: uuid.UUID
+    ) -> Result[bool, AppError]: ...
+
+    async def add_user(
+        self, organization_id: uuid.UUID, user_id: uuid.UUID, role: OrganizationRole
+    ) -> Result[None, AppError]: ...
+
+    async def remove_user(
+        self, organization_id: uuid.UUID, user_id: uuid.UUID
+    ) -> Result[None, AppError]: ...
 
 
 class MonitorRepository(Protocol):
