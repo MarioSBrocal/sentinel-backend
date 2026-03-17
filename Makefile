@@ -25,6 +25,9 @@ ps:
 logs:
 	docker compose logs -f
 
+stats:
+	docker compose stats
+
 up-core:
 	docker compose up -d db redis
 
