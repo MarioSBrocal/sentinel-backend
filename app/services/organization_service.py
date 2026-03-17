@@ -21,15 +21,19 @@ class OrganizationService:
         new_organization = Organization(name=name)
 
         result_create = await self.organization_repo.create(new_organization)
+
         if result_create.is_err():
             return Err(result_create.unwrap_err())
+
         organization = result_create.unwrap()
 
         result_add_user = await self.organization_repo.add_user(
             organization.id, user_id, OrganizationRole.OWNER
         )
+
         if result_add_user.is_err():
             return Err(result_add_user.unwrap_err())
+
         return Ok(organization)
 
     async def get_organization_by_id(
