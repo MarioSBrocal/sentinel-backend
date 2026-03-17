@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from app.api.dependencies import get_current_user, get_hourly_stat_service
 from app.core.errors import TokenError
@@ -33,10 +33,7 @@ async def create_hourly_stat(
     )
 
     if result.is_err():
-        error = result.unwrap_err()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.message
-        )
+        raise result.unwrap_err()
 
     return result.unwrap()
 
@@ -52,9 +49,6 @@ async def get_monitor_hourly_stats(
     result = await service.get_monitor_hourly_stats(monitor_id)
 
     if result.is_err():
-        error = result.unwrap_err()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.message
-        )
+        raise result.unwrap_err()
 
     return result.unwrap()

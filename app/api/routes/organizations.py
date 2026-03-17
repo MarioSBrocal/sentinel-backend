@@ -1,9 +1,9 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from app.api.dependencies import get_current_user, get_organization_service
-from app.core.errors import OrganizationNotFoundError, TokenError
+from app.core.errors import TokenError
 from app.models.user import User
 from app.schemas.organization import (
     OrganizationCreate,
@@ -31,10 +31,7 @@ async def create_organization(
     result = await service.create_organization(organization_in.name, current_user.id)
 
     if result.is_err():
-        error = result.unwrap_err()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.message
-        )
+        raise result.unwrap_err()
 
     return result.unwrap()
 
@@ -50,17 +47,7 @@ async def get_organization(
     result = await service.get_organization_by_id(organization_id)
 
     if result.is_err():
-        error = result.unwrap_err()
-        match error:
-            case OrganizationNotFoundError():
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail=error.message
-                )
-            case _:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=error.message,
-                )
+        raise result.unwrap_err()
 
     return result.unwrap()
 
@@ -79,17 +66,7 @@ async def update_organization(
     )
 
     if result.is_err():
-        error = result.unwrap_err()
-        match error:
-            case OrganizationNotFoundError():
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail=error.message
-                )
-            case _:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=error.message,
-                )
+        raise result.unwrap_err()
 
 
 @router.delete("/{organization_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -103,17 +80,7 @@ async def delete_organization(
     result = await service.delete_organization(organization_id)
 
     if result.is_err():
-        error = result.unwrap_err()
-        match error:
-            case OrganizationNotFoundError():
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail=error.message
-                )
-            case _:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=error.message,
-                )
+        raise result.unwrap_err()
 
 
 @router.put(
@@ -133,17 +100,7 @@ async def add_user_to_organization(
     )
 
     if result.is_err():
-        error = result.unwrap_err()
-        match error:
-            case OrganizationNotFoundError():
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail=error.message
-                )
-            case _:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=error.message,
-                )
+        raise result.unwrap_err()
 
 
 @router.delete(
@@ -160,14 +117,4 @@ async def remove_user_from_organization(
     result = await service.remove_user_from_organization(organization_id, user_id)
 
     if result.is_err():
-        error = result.unwrap_err()
-        match error:
-            case OrganizationNotFoundError():
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND, detail=error.message
-                )
-            case _:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=error.message,
-                )
+        raise result.unwrap_err()

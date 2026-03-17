@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from app.api.dependencies import get_current_user, get_monitor_service
 from app.core.errors import TokenError
@@ -35,10 +35,7 @@ async def create_monitor(
     )
 
     if result.is_err():
-        error = result.unwrap_err()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.message
-        )
+        raise result.unwrap_err()
 
     return result.unwrap()
 
@@ -53,10 +50,7 @@ async def get_monitors(
     result = await service.get_user_monitors(current_user.id)
 
     if result.is_err():
-        error = result.unwrap_err()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.message
-        )
+        raise result.unwrap_err()
 
     return result.unwrap()
 
@@ -74,6 +68,7 @@ async def add_alert_channel_to_monitor(
 
     monitor_id_uuid = uuid.UUID(monitor_id)
     channel_id_uuid = uuid.UUID(channel_id)
+
     result = await service.link_alert_channel(
         user_id=current_user.id,
         monitor_id=monitor_id_uuid,
@@ -81,9 +76,4 @@ async def add_alert_channel_to_monitor(
     )
 
     if result.is_err():
-        error = result.unwrap_err()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.message
-        )
-
-    return None
+        raise result.unwrap_err()
