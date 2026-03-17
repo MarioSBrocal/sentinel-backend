@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.routes import (
     alert_channels,
@@ -16,6 +17,7 @@ from app.api.routes import (
     users,
 )
 from app.core.config import settings
+from app.core.errors import AppError
 from app.worker.broker import broker
 
 
@@ -63,6 +65,16 @@ app.include_router(monitors.router, prefix="/api/v1/monitors")
 app.include_router(organizations.router, prefix="/api/v1/organizations")
 app.include_router(ping_logs.router, prefix="/api/v1/ping-logs")
 app.include_router(users.router, prefix="/api/v1/users")
+
+
+# Global exception handler for AppError
+@app.exception_handler(AppError)
+async def app_error_handler(request: Request, exc: AppError):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": str(exc.message)},
+        headers={"WWW-Authenticate": "Bearer"} if exc.status_code == 401 else None,
+    )
 
 
 # Health check endpoint
