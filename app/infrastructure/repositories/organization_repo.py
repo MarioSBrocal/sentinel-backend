@@ -30,6 +30,7 @@ class SQLAlchemyOrganizationRepository(OrganizationRepository):
         self, organization: Organization
     ) -> Result[Organization, AppError]:
         self.db.add(organization)
+
         try:
             await self.db.commit()
             await self.db.refresh(organization)
@@ -62,7 +63,6 @@ class SQLAlchemyOrganizationRepository(OrganizationRepository):
         result = await self.get_by_id(organization_id)
         if result.is_err():
             return Err(result.unwrap_err())
-
         organization = result.unwrap()
         if name is not None:
             organization.name = name
@@ -79,7 +79,6 @@ class SQLAlchemyOrganizationRepository(OrganizationRepository):
         result = await self.get_by_id(organization_id)
         if result.is_err():
             return Err(result.unwrap_err())
-
         organization = result.unwrap()
         organization.deleted_at = datetime.now(UTC)
 
@@ -145,8 +144,8 @@ class SQLAlchemyOrganizationRepository(OrganizationRepository):
         membership = result.scalars().first()
         if not membership:
             return Err(UserNotInOrganizationError())
-
         await self.db.delete(membership)
+
         try:
             await self.db.commit()
             return Ok(None)
