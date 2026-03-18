@@ -1,8 +1,8 @@
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import override
 
-from sqlalchemy import insert, select, text
+from sqlalchemy import func, insert, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -91,6 +91,29 @@ class SQLAlchemyPingLogRepository(PingLogRepository):
         try:
             await self.db.execute(sql_today)
             await self.db.execute(sql_tomorrow)
+            await self.db.commit()
+        except Exception as e:
+            await self.db.rollback()
+            return Err(DatabaseError(detail=str(e)))
+        return Ok(None)
+
+    @override
+    async def min_date(self) -> Result[date, AppError]:
+        result = await self.db.execute(select(func.min(PingLog.timestamp)))
+        min_timestamp = result.scalars().first()
+        if min_timestamp is None:
+            return Ok(date.today())
+        return Ok(min_timestamp.date())
+
+    @override
+    async def drop_partition_for_date(
+        self, partition_date: date
+    ) -> Result[None, AppError]:
+        partition_table = f"ping_logs_{partition_date.strftime('%Y_%m_%d')}"
+        sql_drop = text(f"DROP TABLE IF EXISTS {partition_table};")
+
+        try:
+            await self.db.execute(sql_drop)
             await self.db.commit()
         except Exception as e:
             await self.db.rollback()

@@ -121,6 +121,12 @@ class PingLogRepository(Protocol):
 
     async def ensure_daily_partitions(self) -> Result[None, AppError]: ...
 
+    async def min_date(self) -> Result[date, AppError]: ...
+
+    async def drop_partition_for_date(
+        self, partition_date: date
+    ) -> Result[None, AppError]: ...
+
 
 class HourlyStatRepository(Protocol):
     """Hourly Stat Repository Protocol defines the interface for hourly stat data access."""
@@ -156,3 +162,11 @@ class DailyStatRepository(Protocol):
     async def get_all_by_monitor(
         self, monitor_id: uuid.UUID
     ) -> Result[list[DailyStat], AppError]: ...
+
+    async def max_date(self) -> Result[date, AppError]: ...
+
+    async def aggregate_between(
+        self,
+        start_date: date,
+        end_date: date,
+    ) -> Result[int, AppError]: ...

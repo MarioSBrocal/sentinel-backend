@@ -63,7 +63,7 @@ class SQLAlchemyHourlyStatRepository(HourlyStatRepository):
         result = await self.db.execute(select(func.max(HourlyStat.hour_timestamp)))
         max_timestamp = result.scalars().first()
         if max_timestamp is None:
-            return Err(DatabaseError("No hourly stats found"))
+            return Ok(datetime.min)
         return Ok(max_timestamp)
 
     @override
