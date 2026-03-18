@@ -1,6 +1,7 @@
 from app.infrastructure.repositories.alert_channel_repo import (
     SQLAlchemyAlertChannelRepository,
 )
+from app.infrastructure.repositories.api_key_repo import SQLAlchemyApiKeyRepository
 from app.infrastructure.repositories.daily_stat_repo import (
     SQLAlchemyDailyStatRepository,
 )
@@ -17,6 +18,7 @@ from app.infrastructure.repositories.user_repo import SQLAlchemyUserRepository
 
 __all__ = [
     "SQLAlchemyAlertChannelRepository",
+    "SQLAlchemyApiKeyRepository",
     "SQLAlchemyDailyStatRepository",
     "SQLAlchemyHourlyStatRepository",
     "SQLAlchemyIncidentRepository",
