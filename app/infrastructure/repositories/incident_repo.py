@@ -6,6 +6,8 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.errors import AppError, DatabaseError, IncidentNotFoundError
+from app.core.result import Err, Ok, Result
 from app.domain.repositories import IncidentRepository
 from app.models.incident import Incident
 
@@ -17,46 +19,64 @@ class SQLAlchemyIncidentRepository(IncidentRepository):
         self.db = db
 
     @override
-    async def create(self, incident: Incident) -> Incident:
+    async def create(self, incident: Incident) -> Result[Incident, AppError]:
         self.db.add(incident)
+
         try:
             await self.db.commit()
             await self.db.refresh(incident)
-            return incident
-        except IntegrityError:
+            return Ok(incident)
+        except IntegrityError as e:
             await self.db.rollback()
-            raise
+            return Err(DatabaseError(detail=str(e)))
 
     @override
-    async def get_by_id(self, incident_id: int) -> Incident | None:
+    async def get_by_id(self, incident_id: int) -> Result[Incident, AppError]:
         result = await self.db.execute(
             select(Incident).where(Incident.id == incident_id)
         )
-        return result.scalars().first()
+        incident = result.scalars().first()
+        if not incident:
+            return Err(IncidentNotFoundError(incident_id=incident_id))
+
+        return Ok(incident)
 
     @override
-    async def get_all_by_monitor(self, monitor_id: uuid.UUID) -> list[Incident]:
+    async def get_all_by_monitor(
+        self, monitor_id: uuid.UUID
+    ) -> Result[list[Incident], AppError]:
         result = await self.db.execute(
             select(Incident).where(Incident.monitor_id == monitor_id)
         )
-        return list(result.scalars().all())
+        return Ok(list(result.scalars().all()))
 
     @override
-    async def get_active_by_monitor(self, monitor_id: uuid.UUID) -> Incident | None:
+    async def get_active_by_monitor(
+        self, monitor_id: uuid.UUID
+    ) -> Result[Incident, AppError]:
         result = await self.db.execute(
             select(Incident).where(
                 Incident.monitor_id == monitor_id, Incident.resolved_at.is_(None)
             )
         )
-        return result.scalars().first()
+        incident = result.scalars().first()
+        if not incident:
+            return Err(IncidentNotFoundError())
+        return Ok(incident)
 
     @override
-    async def resolve(self, incident_id: int) -> None:
-        incident = await self.get_by_id(incident_id)
-        if incident and incident.resolved_at is None:
+    async def resolve(self, incident_id: int) -> Result[None, AppError]:
+        result = await self.get_by_id(incident_id)
+        if result.is_err():
+            return Err(result.unwrap_err())
+        incident = result.unwrap()
+
+        if incident.resolved_at is None:
             incident.resolved_at = datetime.now(UTC)
             try:
                 await self.db.commit()
-            except IntegrityError:
+            except IntegrityError as e:
                 await self.db.rollback()
-                raise
+                return Err(DatabaseError(detail=str(e)))
+
+        return Ok(None)

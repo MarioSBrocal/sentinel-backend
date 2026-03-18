@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from app.core.errors import AppError, DatabaseError
+from app.core.errors import AppError
 from app.core.result import Err, Ok, Result
 from app.domain.repositories import PingLogRepository
 from app.models.ping_log import PingLog
@@ -20,6 +20,7 @@ class PingLogService:
         status_code: int | None = None,
     ) -> Result[PingLog, AppError]:
         """Record a new ping log entry for a monitor."""
+
         new_log = PingLog(
             monitor_id=monitor_id,
             timestamp=timestamp,
@@ -28,18 +29,21 @@ class PingLogService:
             is_up=is_up,
         )
 
-        try:
-            saved_log = await self.ping_log_repo.create(new_log)
-            return Ok(saved_log)
-        except Exception as e:
-            return Err(DatabaseError(detail=str(e)))
+        result = await self.ping_log_repo.create(new_log)
+
+        if result.is_err():
+            return Err(result.unwrap_err())
+
+        return Ok(result.unwrap())
 
     async def get_monitor_ping_logs(
         self, monitor_id: uuid.UUID
     ) -> Result[list[PingLog], AppError]:
         """Retrieve all ping logs for a specific monitor."""
-        try:
-            logs = await self.ping_log_repo.get_all_by_monitor(monitor_id)
-            return Ok(logs)
-        except Exception as e:
-            return Err(DatabaseError(detail=str(e)))
+
+        result = await self.ping_log_repo.get_all_by_monitor(monitor_id)
+
+        if result.is_err():
+            return Err(result.unwrap_err())
+
+        return Ok(result.unwrap())

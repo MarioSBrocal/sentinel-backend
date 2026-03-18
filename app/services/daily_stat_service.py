@@ -1,7 +1,7 @@
 import uuid
 from datetime import date
 
-from app.core.errors import AppError, DailyStatNotFound, DatabaseError
+from app.core.errors import AppError
 from app.core.result import Err, Ok, Result
 from app.domain.repositories import DailyStatRepository
 from app.models.daily_stat import DailyStat
@@ -20,6 +20,7 @@ class DailyStatService:
         avg_response_time_ms: int,
     ) -> Result[DailyStat, AppError]:
         """Create a new daily stat entry for a monitor."""
+
         new_stat = DailyStat(
             monitor_id=monitor_id,
             date=date,
@@ -28,31 +29,33 @@ class DailyStatService:
             avg_response_time_ms=avg_response_time_ms,
         )
 
-        try:
-            saved_stat = await self.daily_stat_repo.create(new_stat)
-            return Ok(saved_stat)
-        except Exception as e:
-            return Err(DatabaseError(detail=str(e)))
+        result = await self.daily_stat_repo.create(new_stat)
+
+        if result.is_err():
+            return Err(result.unwrap_err())
+
+        return Ok(result.unwrap())
 
     async def get_by_monitor_and_date(
         self, monitor_id: uuid.UUID, date: date
     ) -> Result[DailyStat, AppError]:
         """Retrieve a single daily stat by monitor and date."""
-        try:
-            stat = await self.daily_stat_repo.get_by_monitor_and_date(monitor_id, date)
-            if stat is None:
-                return Err(DailyStatNotFound(monitor_id=monitor_id, date=date))
 
-            return Ok(stat)
-        except Exception as e:
-            return Err(DatabaseError(detail=str(e)))
+        result = await self.daily_stat_repo.get_by_monitor_and_date(monitor_id, date)
+
+        if result.is_err():
+            return Err(result.unwrap_err())
+
+        return Ok(result.unwrap())
 
     async def get_monitor_daily_stats(
         self, monitor_id: uuid.UUID
     ) -> Result[list[DailyStat], AppError]:
         """Retrieve all daily stats for a specific monitor."""
-        try:
-            stats = await self.daily_stat_repo.get_all_by_monitor(monitor_id)
-            return Ok(stats)
-        except Exception as e:
-            return Err(DatabaseError(detail=str(e)))
+
+        result = await self.daily_stat_repo.get_all_by_monitor(monitor_id)
+
+        if result.is_err():
+            return Err(result.unwrap_err())
+
+        return Ok(result.unwrap())

@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.dependencies import get_user_service
-from app.core.errors import InvalidCredentialsError, UserAlreadyExistsError
 from app.core.security import create_access_token
 from app.schemas.token import Token
 from app.schemas.user import UserCreate, UserResponse
@@ -23,18 +22,7 @@ async def register(
     )
 
     if result.is_err():
-        error = result.unwrap_err()
-        match error:
-            case UserAlreadyExistsError():
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=error.message,
-                )
-            case _:
-                raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=error.message,
-                )
+        raise result.unwrap_err()
 
     return result.unwrap()
 
@@ -49,14 +37,7 @@ async def login(
     )
 
     if result.is_err():
-        error = result.unwrap_err()
-        match error:
-            case InvalidCredentialsError():
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=error.message,
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
+        raise result.unwrap_err()
 
     user = result.unwrap()
     access_token = create_access_token(data={"sub": user.email})

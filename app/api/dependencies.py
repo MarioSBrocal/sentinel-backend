@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from jose.exceptions import JWTError
@@ -82,29 +82,24 @@ async def get_current_user(
     user_service: UserService = Depends(get_user_service),  # noqa: B008
 ) -> User:
     """Validates the JWT token and retrieves the current user."""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail=TokenError().message,
-        headers={"WWW-Authenticate": "Bearer"},
-    )
 
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
 
         if email is None:
-            raise credentials_exception
+            raise TokenError()
 
         token_data = TokenData(email=email)
     except JWTError as e:
-        raise credentials_exception from e
+        raise TokenError() from e
 
     if token_data.email is None:
-        raise credentials_exception
+        raise TokenError()
     result = await user_service.get_user_by_email(email=token_data.email)
 
     if result.is_err():
-        raise credentials_exception
+        raise TokenError()
 
     return result.unwrap()
 

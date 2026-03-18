@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from app.api.dependencies import get_alert_channel_service, get_current_user
 from app.core.errors import TokenError
@@ -27,10 +27,8 @@ async def create_channel(
     )
 
     if result.is_err():
-        error = result.unwrap_err()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.message
-        )
+        raise result.unwrap_err()
+
     return result.unwrap()
 
 
@@ -40,9 +38,8 @@ async def get_channels(
     service: AlertChannelService = Depends(get_alert_channel_service),  # noqa: B008
 ):
     result = await service.get_user_channels(current_user.id)
+
     if result.is_err():
-        error = result.unwrap_err()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=error.message
-        )
+        raise result.unwrap_err()
+
     return result.unwrap()
