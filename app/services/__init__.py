@@ -1,4 +1,5 @@
 from app.services.alert_channel_service import AlertChannelService
+from app.services.api_key_service import ApiKeyService
 from app.services.daily_stat_service import DailyStatService
 from app.services.hourly_stat_service import HourlyStatService
 from app.services.incident_service import IncidentService
@@ -8,6 +9,7 @@ from app.services.user_service import UserService
 
 __all__ = [
     "AlertChannelService",
+    "ApiKeyService",
     "DailyStatService",
     "HourlyStatService",
     "IncidentService",
