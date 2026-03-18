@@ -1,9 +1,15 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from jose import JWTError, jwt
 
 from app.api.dependencies import get_user_service
-from app.core.security import create_access_token
-from app.schemas.token import Token
+from app.core.security import (
+    ALGORITHM,
+    SECRET_KEY,
+    create_access_token,
+    create_refresh_token,
+)
+from app.schemas.token import Token, TokenRefreshRequest
 from app.schemas.user import UserCreate, UserResponse
 from app.services.user_service import UserService
 
@@ -41,4 +47,35 @@ async def login(
 
     user = result.unwrap()
     access_token = create_access_token(data={"sub": user.email})
-    return Token(access_token=access_token, token_type="bearer")
+    refresh_token = create_refresh_token(data={"sub": user.email})
+    return Token(access_token=access_token, refresh_token=refresh_token)
+
+
+@router.post("/refresh", response_model=Token)
+async def refresh_token(request: TokenRefreshRequest):
+    """Takes a refresh token and returns a new access token if the refresh token is valid."""
+    try:
+        payload = jwt.decode(request.refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_email: str = payload.get("sub")
+        token_type: str = payload.get("type")
+
+        if token_type != "refresh":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token type: refresh token expected",
+            )
+
+        if user_email is None:
+            raise HTTPException(
+                status_code=401, detail="Invalid token: subject missing"
+            )
+
+    except JWTError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
+        ) from e
+
+    new_access_token = create_access_token(data={"sub": user_email})
+
+    return Token(access_token=new_access_token, refresh_token=request.refresh_token)
