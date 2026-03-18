@@ -1,3 +1,4 @@
+import hashlib
 from collections.abc import AsyncGenerator
 
 from fastapi import Depends
@@ -14,6 +15,7 @@ from app.infrastructure.db.session import get_db
 from app.infrastructure.repositories.alert_channel_repo import (
     SQLAlchemyAlertChannelRepository,
 )
+from app.infrastructure.repositories.api_key_repo import SQLAlchemyApiKeyRepository
 from app.infrastructure.repositories.daily_stat_repo import (
     SQLAlchemyDailyStatRepository,
 )
@@ -30,6 +32,7 @@ from app.infrastructure.repositories.user_repo import SQLAlchemyUserRepository
 from app.models.user import User
 from app.schemas.token import TokenData
 from app.services.alert_channel_service import AlertChannelService
+from app.services.api_key_service import ApiKeyService
 from app.services.daily_stat_service import DailyStatService
 from app.services.hourly_stat_service import HourlyStatService
 from app.services.incident_service import IncidentService
@@ -56,6 +59,20 @@ def get_user_repository(db: AsyncSession = Depends(get_db)) -> SQLAlchemyUserRep
     return SQLAlchemyUserRepository(db)
 
 
+def get_api_key_repository(
+    db: AsyncSession = Depends(get_db),  # noqa: B008
+) -> SQLAlchemyApiKeyRepository:
+    """Gets the API key repository instance."""
+    return SQLAlchemyApiKeyRepository(db)
+
+
+def get_api_key_service(
+    repo: SQLAlchemyApiKeyRepository = Depends(get_api_key_repository),  # noqa: B008
+) -> ApiKeyService:
+    """Gets the API key service instance."""
+    return ApiKeyService(api_key_repo=repo)
+
+
 def get_user_service(
     repo: SQLAlchemyUserRepository = Depends(get_user_repository),  # noqa: B008
 ) -> UserService:
@@ -80,11 +97,35 @@ def get_organization_service(
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     user_service: UserService = Depends(get_user_service),  # noqa: B008
+    api_key_service: ApiKeyService = Depends(get_api_key_service),  # noqa: B008
 ) -> User:
-    """Validates the JWT token and retrieves the current user."""
+    """Validates the API key or JWT token and retrieves the current user."""
+
+    if token.startswith("sent_"):
+        hashed_token = hashlib.sha256(token.encode()).hexdigest()
+
+        api_key_result = await api_key_service.get_api_key_by_hash(hashed_token)
+
+        if api_key_result.is_err():
+            raise TokenError()
+
+        api_key = api_key_result.unwrap()
+
+        await api_key_service.update_last_used(api_key.id)
+
+        user_result = await user_service.get_user_by_id(user_id=api_key.user_id)
+
+        if user_result.is_err():
+            raise TokenError()
+
+        return user_result.unwrap()
 
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+
+        if payload.get("type") != "access":
+            raise TokenError()
+
         email: str = payload.get("sub")
 
         if email is None:

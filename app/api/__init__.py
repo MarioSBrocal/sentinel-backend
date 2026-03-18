@@ -1,5 +1,6 @@
 from app.api.dependencies import (
     get_alert_channel_service,
+    get_api_key_service,
     get_current_user,
     get_daily_stat_service,
     get_hourly_stat_service,
@@ -13,6 +14,7 @@ from app.api.dependencies import (
 
 __all__ = [
     "get_alert_channel_service",
+    "get_api_key_service",
     "get_current_user",
     "get_daily_stat_service",
     "get_hourly_stat_service",
