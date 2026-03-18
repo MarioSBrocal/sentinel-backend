@@ -1,3 +1,5 @@
+import uuid
+
 from app.core.errors import (
     AppError,
     DatabaseError,
@@ -49,6 +51,10 @@ class UserService:
             return Err(InvalidCredentialsError())
 
         return Ok(user)
+
+    async def get_user_by_id(self, user_id: uuid.UUID) -> Result[User, AppError]:
+        """Retrieve a user by their ID."""
+        return await self.user_repo.get_by_id(user_id)
 
     async def get_user_by_email(self, email: str) -> Result[User, AppError]:
         """Retrieve a user by their email."""
