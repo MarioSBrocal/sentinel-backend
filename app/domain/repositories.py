@@ -5,6 +5,7 @@ from typing import Protocol
 from app.core.errors import AppError
 from app.core.result import Result
 from app.models.alert_channel import AlertChannel
+from app.models.api_key import ApiKey
 from app.models.daily_stat import DailyStat
 from app.models.hourly_stat import HourlyStat
 from app.models.incident import Incident
@@ -15,8 +16,28 @@ from app.models.ping_log import PingLog
 from app.models.user import User
 
 
+class ApiKeyRepository(Protocol):
+    """API Key Repository Protocol defines the interface for API key data access."""
+
+    async def create(self, api_key: ApiKey) -> Result[ApiKey, AppError]: ...
+
+    async def get_by_user_id(
+        self, user_id: uuid.UUID
+    ) -> Result[list[ApiKey], AppError]: ...
+
+    async def get_by_hashed_key(self, hashed_key: str) -> Result[ApiKey, AppError]: ...
+
+    async def update_last_used(
+        self, api_key_id: uuid.UUID
+    ) -> Result[None, AppError]: ...
+
+    async def delete(self, api_key: ApiKey) -> Result[None, AppError]: ...
+
+
 class UserRepository(Protocol):
     """User Repository Protocol defines the interface for user data access."""
+
+    async def get_by_id(self, user_id: uuid.UUID) -> Result[User, AppError]: ...
 
     async def get_by_email(self, email: str) -> Result[User, AppError]: ...
 

@@ -1,5 +1,6 @@
 from app.domain.repositories import (
     AlertChannelRepository,
+    ApiKeyRepository,
     DailyStatRepository,
     HourlyStatRepository,
     IncidentRepository,
@@ -11,6 +12,7 @@ from app.domain.repositories import (
 
 __all__ = [
     "AlertChannelRepository",
+    "ApiKeyRepository",
     "DailyStatRepository",
     "HourlyStatRepository",
     "IncidentRepository",
