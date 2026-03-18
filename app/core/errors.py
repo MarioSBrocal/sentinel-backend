@@ -25,6 +25,18 @@ class DatabaseError(AppError):
     detail: str
 
 
+# ApiKey-related errors
+@dataclass
+class ApiKeyNotFoundError(AppError):
+    """Raised when an API key with a given hash is not found."""
+
+    status_code: int = status.HTTP_404_NOT_FOUND
+
+    @property
+    def message(self) -> str:
+        return "API key not found."
+
+
 # User-related errors
 @dataclass
 class UserAlreadyExistsError(AppError):
@@ -42,12 +54,17 @@ class UserAlreadyExistsError(AppError):
 class UserNotFoundError(AppError):
     """Raised when a user with a given email is not found."""
 
-    email: str
+    user_id: uuid.UUID | None = None
+    email: str | None = None
     status_code: int = status.HTTP_404_NOT_FOUND
 
     @property
     def message(self) -> str:
-        return f"User with email {self.email} not found."
+        return (
+            f"User with email {self.email} not found."
+            if self.email
+            else f"User with ID {self.user_id} not found."
+        )
 
 
 @dataclass
