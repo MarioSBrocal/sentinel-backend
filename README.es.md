@@ -116,7 +116,7 @@ Si deseas contribuir o modificar el código, utilizamos `uv` para una gestión u
 ## Hoja de Ruta
 
 - [ ] Implementación de Rate Limiting (SlowAPI) para protección de endpoints.
-- [ ] Autenticación mediante API Keys para integraciones CI/CD y scripts.
+- [x] Autenticación mediante API Keys para integraciones CI/CD y scripts.
 - [ ] Sistema de Canales de Alerta (Email, Slack, Discord, Webhooks).
 - [ ] Interfaz gráfica (Frontend).
 

@@ -116,7 +116,7 @@ If you want to contribute or modify the code, we use `uv` for ultra-fast depende
 ## Roadmap (Coming Soon)
 
 - [ ] Rate Limiting (SlowAPI) implementation for endpoint protection.
-- [ ] API Key authentication for CI/CD integrations and scripts.
+- [x] API Key authentication for CI/CD integrations and scripts.
 - [ ] Alert Channels system (Email, Slack, Discord, Webhooks).
 - [ ] Graphical Interface (Frontend).
 

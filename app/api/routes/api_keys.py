@@ -37,4 +37,13 @@ async def create_api_key(
     )
 
 
-# TODO: Implement DELETE /api-keys/{id}
+@router.delete("/{hashed_key}/", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_api_key(
+    hashed_key: str,
+    service: ApiKeyService = Depends(get_api_key_service),  # noqa: B008
+    current_user: User = Depends(get_current_user),  # noqa: B008
+):
+    result = await service.delete_api_key_by_hash(hashed_key)
+
+    if result.is_err():
+        raise result.unwrap_err()

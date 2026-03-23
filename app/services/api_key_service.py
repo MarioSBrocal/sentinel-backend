@@ -37,5 +37,11 @@ class ApiKeyService:
     async def update_last_used(self, api_key_id: uuid.UUID) -> Result[None, AppError]:
         return await self.api_key_repo.update_last_used(api_key_id)
 
-    async def delete_api_key(self, api_key: ApiKey) -> Result[None, AppError]:
+    async def delete_api_key_by_hash(self, hashed_key: str) -> Result[None, AppError]:
+        get_result = await self.api_key_repo.get_by_hashed_key(hashed_key)
+
+        if get_result.is_err():
+            return Err(get_result.unwrap_err())
+
+        api_key = get_result.unwrap()
         return await self.api_key_repo.delete(api_key)
