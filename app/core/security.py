@@ -1,3 +1,5 @@
+import hashlib
+import secrets
 from datetime import UTC, datetime, timedelta
 
 import bcrypt
@@ -28,13 +30,32 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     """Creates a JWT access token with the given data and expiration time."""
     to_encode = data.copy()
+    expire = datetime.now(UTC) + (expires_delta or timedelta(minutes=15))
 
-    if expires_delta:
-        expire = datetime.now(UTC) + expires_delta
-    else:
-        expire = datetime.now(UTC) + timedelta(minutes=15)
+    to_encode.update({"exp": expire, "type": "access"})
 
-    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+
+def create_refresh_token(data: dict, expires_delta: timedelta | None = None) -> str:
+    """Creates a JWT refresh token with the given data and expiration time."""
+    to_encode = data.copy()
+    expire = datetime.now(UTC) + (expires_delta or timedelta(days=7))
+
+    to_encode.update({"exp": expire, "type": "refresh"})
+
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def generate_api_key() -> tuple[str, str, str]:
+    """Generates a new API key, returning the raw key, its prefix, and the hashed version for storage."""
+    raw_key = f"sent_{secrets.token_urlsafe(32)}"
+    prefix = raw_key[:8]
+    hashed_key = hashlib.sha256(raw_key.encode()).hexdigest()
+
+    return raw_key, prefix, hashed_key
+
+
+def verify_api_key(plain_api_key: str, hashed_api_key: str) -> bool:
+    """Verifies if the raw API key matches the hash stored in the database."""
+    return hashlib.sha256(plain_api_key.encode()).hexdigest() == hashed_api_key

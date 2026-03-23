@@ -80,7 +80,7 @@ The easiest way to run Sentinel is by using Docker Compose. The entire infrastru
    In another terminal, while containers are running, execute:
    ```bash
    make migrate-up
-   # Or equivalent: docker compose exec api alembic upgrade head
+   # Or equivalent: uv run alembic upgrade head
    ```
 
 Done! The API will be available at `http://localhost:8000`.
@@ -106,7 +106,7 @@ If you want to contribute or modify the code, we use `uv` for ultra-fast depende
 3. To create a new database migration after modifying a model:
    ```bash
    make migrate-create msg="Name of your change"
-   # Or equivalent: docker compose exec api alembic revision --autogenerate -m "msg"
+   # Or equivalent: uv run alembic revision --autogenerate -m "msg"
    ```
 
 ---
@@ -116,7 +116,7 @@ If you want to contribute or modify the code, we use `uv` for ultra-fast depende
 ## Roadmap (Coming Soon)
 
 - [ ] Rate Limiting (SlowAPI) implementation for endpoint protection.
-- [ ] API Key authentication for CI/CD integrations and scripts.
+- [x] API Key authentication for CI/CD integrations and scripts.
 - [ ] Alert Channels system (Email, Slack, Discord, Webhooks).
 - [ ] Graphical Interface (Frontend).
 

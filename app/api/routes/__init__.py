@@ -1,5 +1,6 @@
 from app.api.routes import (
     alert_channels,
+    api_keys,
     auth,
     daily_stats,
     hourly_stats,
@@ -12,6 +13,7 @@ from app.api.routes import (
 
 __all__ = [
     "alert_channels",
+    "api_keys",
     "auth",
     "daily_stats",
     "hourly_stats",

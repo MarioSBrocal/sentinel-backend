@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.routes import (
     alert_channels,
+    api_keys,
     auth,
     daily_stats,
     hourly_stats,
@@ -57,6 +58,7 @@ app = FastAPI(
 
 # Include API routes
 app.include_router(alert_channels.router, prefix="/api/v1/alert-channels")
+app.include_router(api_keys.router, prefix="/api/v1/api-keys")
 app.include_router(auth.router, prefix="/api/v1/auth")
 app.include_router(daily_stats.router, prefix="/api/v1/daily-stats")
 app.include_router(hourly_stats.router, prefix="/api/v1/hourly-stats")

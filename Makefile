@@ -80,11 +80,15 @@ down-scheduler:
 	docker compose stop scheduler
 
 up-services:
-	@if [ -z "$(SERVICES)" ]; then echo "Usage: make up-services SERVICES='db redis'"; exit 1; fi
+ifeq ($(strip $(SERVICES)),)
+	$(error The 'SERVICES' parameter is required. Usage: make up-services SERVICES='db redis')
+endif
 	docker compose up -d $(SERVICES)
 
 down-services:
-	@if [ -z "$(SERVICES)" ]; then echo "Usage: make down-services SERVICES='db redis'"; exit 1; fi
+ifeq ($(strip $(SERVICES)),)
+	$(error The 'SERVICES' parameter is required. Usage: make down-services SERVICES='db redis')
+endif
 	docker compose stop $(SERVICES)
 
 api-shell:
@@ -97,11 +101,13 @@ redis-shell:
 	docker compose exec redis redis-cli
 
 migrate-up:
-	docker compose exec api alembic upgrade head
+	uv run alembic upgrade head
 
 migrate-down:
-	docker compose exec api alembic downgrade -1
+	uv run alembic downgrade -1
 
 migrate-create:
-	@if [ -z "$(msg)" ]; then echo "Usage: make migrate-create msg='Add new table'"; exit 1; fi
-	docker compose exec api alembic revision --autogenerate -m "$(msg)"
+ifeq ($(strip $(msg)),)
+	$(error The 'msg' parameter is required. Usage: make migrate-create msg='Add new table')
+endif
+	uv run alembic revision --autogenerate -m "$(msg)"

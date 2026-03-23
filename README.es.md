@@ -80,7 +80,7 @@ La forma más fácil de levantar Sentinel es utilizando Docker Compose. Toda la 
    En otra terminal, mientras los contenedores están corriendo, ejecuta:
    ```bash
    make migrate-up
-   # O equivalente: docker compose exec api alembic upgrade head
+   # O equivalente: uv run alembic upgrade head
    ```
 
 ¡Listo! La API estará disponible en `http://localhost:8000`.
@@ -106,7 +106,7 @@ Si deseas contribuir o modificar el código, utilizamos `uv` para una gestión u
 3. Para crear una nueva migración de base de datos después de modificar un modelo:
    ```bash
    make migrate-create msg="Nombre de tu cambio"
-   # O equivalente: docker compose exec api alembic revision --autogenerate -m "msg"
+   # O equivalente: uv run alembic revision --autogenerate -m "msg"
    ```
 
 ---
@@ -116,7 +116,7 @@ Si deseas contribuir o modificar el código, utilizamos `uv` para una gestión u
 ## Hoja de Ruta
 
 - [ ] Implementación de Rate Limiting (SlowAPI) para protección de endpoints.
-- [ ] Autenticación mediante API Keys para integraciones CI/CD y scripts.
+- [x] Autenticación mediante API Keys para integraciones CI/CD y scripts.
 - [ ] Sistema de Canales de Alerta (Email, Slack, Discord, Webhooks).
 - [ ] Interfaz gráfica (Frontend).
 

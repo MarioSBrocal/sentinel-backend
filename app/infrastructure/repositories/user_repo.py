@@ -1,3 +1,4 @@
+import uuid
 from typing import override
 
 from sqlalchemy import select
@@ -27,6 +28,14 @@ class SQLAlchemyUserRepository(UserRepository):
         except IntegrityError as e:
             await self.db.rollback()
             return Err(DatabaseError(detail=str(e)))
+
+    @override
+    async def get_by_id(self, user_id: uuid.UUID) -> Result[User, AppError]:
+        result = await self.db.execute(select(User).where(User.id == user_id))
+        user = result.scalars().first()
+        if not user:
+            return Err(UserNotFoundError(user_id=user_id))
+        return Ok(user)
 
     @override
     async def get_by_email(self, email: str) -> Result[User, AppError]:
